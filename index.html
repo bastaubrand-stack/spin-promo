@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Подарки</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 24px; max-width: 520px; margin: 0 auto; }
+    .card { border: 1px solid #ddd; border-radius: 14px; padding: 18px; }
+    button { width: 100%; padding: 14px; font-size: 18px; border-radius: 12px; border: 0; cursor: pointer; background:#111; color:#fff; }
+    .result { margin-top: 14px; padding: 14px; background: #f7f7f7; border-radius: 12px; }
+    .small { font-size: 13px; color: #666; margin-top: 10px; }
+    .id { font-weight: 700; font-size: 18px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Крутите барабан 🎁</h2>
+    <p>Нажмите кнопку и получите подарок.</p>
+
+    <button id="spinBtn">Крутить</button>
+
+    <div id="out" class="result" style="display:none;"></div>
+    <div class="small">Сделайте скрин результата и покажите сотруднику.</div>
+  </div>
+
+  <script>
+    // 🔴 СЮДА ВСТАВИМ ссылку Apps Script ПОЗЖЕ
+    const API_URL = "PASTE_YOUR_SCRIPT_URL_HERE";
+
+    const params = new URLSearchParams(window.location.search);
+    const partner = params.get("partner") || "unknown";
+
+    const btn = document.getElementById("spinBtn");
+    const out = document.getElementById("out");
+
+    const key = "spin_done_" + partner;
+    const last = localStorage.getItem(key);
+    if (last && (Date.now() - Number(last)) < 24*60*60*1000) {
+      btn.disabled = true;
+      btn.textContent = "Уже крутили (24ч)";
+    }
+
+    btn.addEventListener("click", async () => {
+      btn.disabled = true;
+      btn.textContent = "Крутим...";
+
+      try {
+        const res = await fetch(API_URL + "?partner=" + encodeURIComponent(partner));
+        const data = await res.json();
+
+        if (!data.ok) {
+          out.style.display = "block";
+          out.innerHTML = "Подарки закончились 🙏";
+          return;
+        }
+
+        out.style.display = "block";
+        out.innerHTML = `
+          <div><b>Ваш подарок:</b> ${data.prize}</div>
+          <div style="margin-top:10px;"><b>ID:</b> <span class="id">${data.claim_id}</span></div>
+        `;
+
+        localStorage.setItem(key, Date.now());
+        btn.textContent = "Готово";
+      } catch (e) {
+        out.style.display = "block";
+        out.textContent = "Ошибка. Попробуйте позже.";
+        btn.disabled = false;
+        btn.textContent = "Крутить";
+      }
+    });
+  </script>
+</body>
+</html>
