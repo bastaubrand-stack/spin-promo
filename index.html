@@ -1,106 +1,337 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Подарки</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Подарок</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 24px; max-width: 520px; margin: 0 auto; }
-    .card { border: 1px solid #ddd; border-radius: 14px; padding: 18px; }
-    button { width: 100%; padding: 14px; font-size: 18px; border-radius: 12px; border: 0; cursor: pointer; background:#111; color:#fff; }
-    .result { margin-top: 14px; padding: 14px; background: #f7f7f7; border-radius: 12px; }
-    .small { font-size: 13px; color: #666; margin-top: 10px; }
-    .id { font-weight: 700; font-size: 18px; }
+    :root{
+      --bg1:#0b0f1a;
+      --bg2:#101a2f;
+      --card:#0f172a;
+      --line:rgba(255,255,255,.10);
+      --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.62);
+      --accent:#22c55e;
+      --accent2:#60a5fa;
+      --danger:#fb7185;
+      --shadow: 0 18px 60px rgba(0,0,0,.55);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(1200px 700px at 20% 10%, rgba(96,165,250,.25), transparent 60%),
+        radial-gradient(900px 600px at 80% 30%, rgba(34,197,94,.20), transparent 55%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      padding:24px;
+    }
+
+    .wrap{
+      width:min(560px, 100%);
+    }
+
+    .card{
+      background: rgba(15,23,42,.82);
+      border:1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    .top{
+      padding:22px 22px 14px 22px;
+      border-bottom:1px solid var(--line);
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .logo{
+      width:44px;height:44px;
+      border-radius:14px;
+      background: linear-gradient(135deg, rgba(96,165,250,.25), rgba(34,197,94,.25));
+      border:1px solid var(--line);
+      display:grid;
+      place-items:center;
+      font-size:20px;
+    }
+
+    h1{
+      margin:0;
+      font-size:20px;
+      letter-spacing:.2px;
+    }
+    .sub{
+      margin:2px 0 0 0;
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    .body{
+      padding:18px 22px 22px 22px;
+    }
+
+    .hint{
+      margin:0 0 14px 0;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.35;
+    }
+
+    .btn{
+      width:100%;
+      border:0;
+      border-radius:16px;
+      padding:14px 16px;
+      font-size:16px;
+      font-weight:700;
+      color:#06121f;
+      cursor:pointer;
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      box-shadow: 0 10px 22px rgba(34,197,94,.15);
+      transition: transform .08s ease, filter .2s ease;
+    }
+    .btn:hover{ filter:brightness(1.05); }
+    .btn:active{ transform: translateY(1px); }
+    .btn[disabled]{
+      opacity:.6;
+      cursor:not-allowed;
+      filter:grayscale(.2);
+    }
+
+    .spinner{
+      margin:14px auto 0 auto;
+      width:54px;height:54px;
+      border-radius:50%;
+      border: 4px solid rgba(255,255,255,.18);
+      border-top-color: rgba(96,165,250,.9);
+      display:none;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .result{
+      margin-top:16px;
+      display:none;
+      border:1px solid var(--line);
+      background: rgba(2,6,23,.55);
+      border-radius:18px;
+      padding:14px;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      color: var(--muted);
+      font-size:12px;
+    }
+
+    .prize{
+      margin:10px 0 0 0;
+      font-size:18px;
+      font-weight:800;
+      letter-spacing:.2px;
+    }
+
+    .idrow{
+      margin-top:10px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      border-top:1px dashed rgba(255,255,255,.14);
+      padding-top:10px;
+    }
+
+    .id{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size:14px;
+      padding:8px 10px;
+      border-radius:12px;
+      background: rgba(255,255,255,.06);
+      border:1px solid var(--line);
+      user-select: all;
+    }
+
+    .copy{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      padding:9px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:700;
+      font-size:13px;
+    }
+
+    .foot{
+      padding:14px 22px 18px 22px;
+      border-top:1px solid var(--line);
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.35;
+    }
+
+    .error{
+      display:none;
+      margin-top:12px;
+      border:1px solid rgba(251,113,133,.35);
+      background: rgba(251,113,133,.10);
+      color: rgba(255,255,255,.90);
+      padding:12px 14px;
+      border-radius:16px;
+      font-size:14px;
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h2>Крутите барабан 🎁</h2>
-    <p>Нажмите кнопку и получите подарок.</p>
+  <div class="wrap">
+    <div class="card">
+      <div class="top">
+        <div class="logo">🎁</div>
+        <div>
+          <h1>Крутите барабан</h1>
+          <div class="sub">Сканируйте QR → нажмите кнопку → получите подарок</div>
+        </div>
+      </div>
 
-    <button id="spinBtn">Крутить</button>
+      <div class="body">
+        <p class="hint">После получения подарка сделайте скрин и покажите сотруднику.</p>
 
-    <div id="out" class="result" style="display:none;"></div>
-    <div class="small">Сделайте скрин результата и покажите сотруднику.</div>
+        <button id="spinBtn" class="btn">Крутить</button>
+        <div id="spinner" class="spinner"></div>
+
+        <div id="err" class="error"></div>
+
+        <div id="res" class="result">
+          <div class="badge">✅ Результат</div>
+          <div id="prize" class="prize"></div>
+
+          <div class="idrow">
+            <div>
+              <div style="color:var(--muted);font-size:12px;margin-bottom:6px;">ID для проверки</div>
+              <div id="claim" class="id"></div>
+            </div>
+            <button id="copyBtn" class="copy">Скопировать ID</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="foot">
+        <b>Важно:</b> один клиент — один подарок (ограничение по времени/браузеру).
+        Если вы случайно закрыли страницу — повторно может не дать подарок.
+      </div>
+    </div>
   </div>
 
   <script>
-    // 🔴 СЮДА ВСТАВИМ ссылку Apps Script ПОЗЖЕ
-  const API_URL = "https://script.google.com/macros/s/XXXXXXXX/exec";
+    // ✅ ВСТАВЬ СЮДА ТВОЙ РАБОЧИЙ URL (ТОТ, КОТОРЫЙ ОТКРЫВАЕТ JSON)
+    const API_URL = "PASTE_YOUR_GOOGLEUSERCONTENT_URL_HERE";
 
     const params = new URLSearchParams(window.location.search);
     const partner = params.get("partner") || "unknown";
 
     const btn = document.getElementById("spinBtn");
-    const out = document.getElementById("out");
+    const spinner = document.getElementById("spinner");
+    const res = document.getElementById("res");
+    const prizeEl = document.getElementById("prize");
+    const claimEl = document.getElementById("claim");
+    const err = document.getElementById("err");
+    const copyBtn = document.getElementById("copyBtn");
 
+    // простое ограничение "1 раз"
     const key = "spin_done_" + partner;
     const last = localStorage.getItem(key);
     if (last && (Date.now() - Number(last)) < 24*60*60*1000) {
       btn.disabled = true;
-      btn.textContent = "Уже крутили (24ч)";
+      btn.textContent = "Уже получено (24ч)";
     }
 
-   <script>
-  const API_URL = "https://script.googleusercontent.com/macros/echo?user_content_key=ТВОЙ_КЛЮЧ";
+    function showError(msg){
+      err.style.display = "block";
+      err.textContent = msg;
+    }
 
-  const params = new URLSearchParams(window.location.search);
-  const partner = params.get("partner") || "unknown";
+    function clearError(){
+      err.style.display = "none";
+      err.textContent = "";
+    }
 
-  const btn = document.getElementById("spinBtn");
-  const out = document.getElementById("out");
+    function jsonp(url, cb){
+      const name = "cb_" + Date.now() + "_" + Math.floor(Math.random()*1000);
+      window[name] = (data) => {
+        try { cb(null, data); }
+        finally {
+          delete window[name];
+          s.remove();
+        }
+      };
+      const s = document.createElement("script");
+      s.src = url + "&callback=" + name;
+      s.onerror = () => {
+        delete window[name];
+        s.remove();
+        cb(new Error("Network error"));
+      };
+      document.body.appendChild(s);
+    }
 
-  btn.addEventListener("click", () => {
-    btn.disabled = true;
-    btn.textContent = "Крутим...";
+    btn.addEventListener("click", () => {
+      btn.disabled = true;
+      btn.textContent = "Крутим...";
+      spinner.style.display = "block";
+      res.style.display = "none";
+      clearError();
 
-    const callbackName = "cb_" + Date.now();
+      const url = API_URL + "&partner=" + encodeURIComponent(partner);
 
-    window[callbackName] = function (data) {
-      delete window[callbackName];
+      jsonp(url, (e, data) => {
+        spinner.style.display = "none";
 
-      if (!data || !data.ok) {
-        out.style.display = "block";
-        out.textContent = "Подарки закончились 🙏";
-        btn.textContent = "Готово";
-        return;
-      }
-
-      out.style.display = "block";
-      out.innerHTML = `
-        <div><b>Ваш подарок:</b> ${data.prize}</div>
-        <div style="margin-top:10px;"><b>ID:</b> <span class="id">${data.claim_id}</span></div>
-      `;
-
-      btn.textContent = "Готово";
-    };
-
-    const script = document.createElement("script");
-    script.src = API_URL + "&partner=" + encodeURIComponent(partner) + "&callback=" + callbackName;
-    document.body.appendChild(script);
-  });
-</script>
-;
-
-        if (!data.ok) {
-          out.style.display = "block";
-          out.innerHTML = "Подарки закончились 🙏";
+        if (e || !data) {
+          showError("Ошибка соединения. Попробуйте ещё раз.");
+          btn.disabled = false;
+          btn.textContent = "Крутить";
           return;
         }
 
-        out.style.display = "block";
-        out.innerHTML = `
-          <div><b>Ваш подарок:</b> ${data.prize}</div>
-          <div style="margin-top:10px;"><b>ID:</b> <span class="id">${data.claim_id}</span></div>
-        `;
+        if (!data.ok) {
+          showError("Подарки закончились 🙏");
+          btn.textContent = "Готово";
+          return;
+        }
+
+        prizeEl.textContent = data.prize || "Подарок";
+        claimEl.textContent = data.claim_id || "-";
+        res.style.display = "block";
+        btn.textContent = "Готово";
 
         localStorage.setItem(key, Date.now());
-        btn.textContent = "Готово";
-      } catch (e) {
-        out.style.display = "block";
-        out.textContent = "Ошибка. Попробуйте позже.";
-        btn.disabled = false;
-        btn.textContent = "Крутить";
+      });
+    });
+
+    copyBtn.addEventListener("click", async () => {
+      try{
+        await navigator.clipboard.writeText(claimEl.textContent.trim());
+        copyBtn.textContent = "Скопировано ✅";
+        setTimeout(()=> copyBtn.textContent = "Скопировать ID", 1200);
+      }catch(e){
+        copyBtn.textContent = "Не получилось";
+        setTimeout(()=> copyBtn.textContent = "Скопировать ID", 1200);
       }
     });
   </script>
