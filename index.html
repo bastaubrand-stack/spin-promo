@@ -41,13 +41,46 @@
       btn.textContent = "Уже крутили (24ч)";
     }
 
-    btn.addEventListener("click", async () => {
-      btn.disabled = true;
-      btn.textContent = "Крутим...";
+   <script>
+  const API_URL = "https://script.googleusercontent.com/macros/echo?user_content_key=ТВОЙ_КЛЮЧ";
 
-      try {
-        const res = await fetch(API_URL + "?partner=" + encodeURIComponent(partner));
-        const data = await res.json();
+  const params = new URLSearchParams(window.location.search);
+  const partner = params.get("partner") || "unknown";
+
+  const btn = document.getElementById("spinBtn");
+  const out = document.getElementById("out");
+
+  btn.addEventListener("click", () => {
+    btn.disabled = true;
+    btn.textContent = "Крутим...";
+
+    const callbackName = "cb_" + Date.now();
+
+    window[callbackName] = function (data) {
+      delete window[callbackName];
+
+      if (!data || !data.ok) {
+        out.style.display = "block";
+        out.textContent = "Подарки закончились 🙏";
+        btn.textContent = "Готово";
+        return;
+      }
+
+      out.style.display = "block";
+      out.innerHTML = `
+        <div><b>Ваш подарок:</b> ${data.prize}</div>
+        <div style="margin-top:10px;"><b>ID:</b> <span class="id">${data.claim_id}</span></div>
+      `;
+
+      btn.textContent = "Готово";
+    };
+
+    const script = document.createElement("script");
+    script.src = API_URL + "&partner=" + encodeURIComponent(partner) + "&callback=" + callbackName;
+    document.body.appendChild(script);
+  });
+</script>
+;
 
         if (!data.ok) {
           out.style.display = "block";
